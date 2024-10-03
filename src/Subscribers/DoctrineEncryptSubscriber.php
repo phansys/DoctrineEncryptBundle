@@ -175,8 +175,8 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     {
         $objectManager = method_exists($onFlushEventArgs, 'getObjectManager') ? $onFlushEventArgs->getObjectManager() : $onFlushEventArgs->getEntityManager();
         $unitOfWork = $objectManager->getUnitOfWork();
-        foreach ([$unitOfWork->getScheduledEntityUpdates(), $unitOfWork->getScheduledEntityInsertions()] as $ScheduledEntities) {
-            foreach ($ScheduledEntities as $entity) {
+        foreach ([$unitOfWork->getScheduledEntityUpdates(), $unitOfWork->getScheduledEntityInsertions()] as $scheduledEntities) {
+            foreach ($scheduledEntities as $entity) {
                 $encryptCounterBefore = $this->encryptCounter;
                 $this->processFields($entity,$objectManager,true);
                 if ($this->encryptCounter > $encryptCounterBefore) {
