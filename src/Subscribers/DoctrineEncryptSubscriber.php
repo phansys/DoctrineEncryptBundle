@@ -199,6 +199,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         $unitOfWork = $objectManager->getUnitOfWork();
         foreach ($unitOfWork->getIdentityMap() as $entityMap) {
             foreach ($entityMap as $entity) {
+                if (method_exists($entity, '__isInitialized') && !$entity->__isInitialized()) {
+                    continue;
+                }
                 $this->processFields($entity,$objectManager, false);
             }
         }
