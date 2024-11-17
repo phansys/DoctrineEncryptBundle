@@ -2,12 +2,14 @@
 
 namespace Ambta\DoctrineEncryptBundle\Tests\Functional\fixtures\Entity;
 
+use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
  *
  */
+#[ORM\Entity]
 class DateTimeJsonArrayTarget
 {
     /**
@@ -16,25 +18,26 @@ class DateTimeJsonArrayTarget
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
      */
+    #[ORM\Id]
+    #[ORM\Column(type:"integer")]
+    #[ORM\GeneratedValue]
     private $id;
 
     /**
      * @Ambta\DoctrineEncryptBundle\Configuration\Encrypted(type="datetime")
      * @ORM\Column(type="string", nullable=true)
      */
+    #[Encrypted(type:'datetime')]
+    #[ORM\Column(type:"string", nullable: true)]
     private $date;
 
     /**
      * @Ambta\DoctrineEncryptBundle\Configuration\Encrypted(type="json")
      * @ORM\Column(type="string", nullable=true)
      */
+    #[Encrypted(type:'json')]
+    #[ORM\Column(type:"string", nullable: true)]
     private $json;
-
-    /**
-     * @Ambta\DoctrineEncryptBundle\Configuration\Encrypted(type="array")
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $array;
 
     /**
      * @return int
@@ -74,21 +77,5 @@ class DateTimeJsonArrayTarget
     public function setJson($json): void
     {
         $this->json = $json;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getArray()
-    {
-        return $this->array;
-    }
-
-    /**
-     * @param mixed $array
-     */
-    public function setArray($array): void
-    {
-        $this->array = $array;
     }
 }

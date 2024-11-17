@@ -177,16 +177,15 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
             $this->assertEquals($secret, $owner->getSecret());
             $this->assertEquals($notSecret, $owner->getNotSecret());
         }
-        $stack = new DebugStack();
-        $connection->getConfiguration()->setSQLLogger($stack);
-        $this->assertCount(0, $stack->queries);
+        $this->resetQueryStack();
+        $this->assertCount(0, $this->getDebugQueries());
         $beforeFlush = $this->subscriber->encryptCounter;
         $em->flush();
         $afterFlush = $this->subscriber->encryptCounter;
         // No encryption should have happened because we didn't change anything.
         $this->assertEquals($beforeFlush, $afterFlush);
         // No queries happened because we didn't change anything.
-        $this->assertCount(0, $stack->queries, "Unexpected queries:\n".var_export($stack->queries, true));
+        $this->assertCount(0, $this->getDebugQueries(), "Unexpected queries:\n".var_export($this->getDebugQueries(), true));
 
         // flush again
         $beforeFlush = $this->subscriber->encryptCounter;
@@ -195,7 +194,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         // No encryption should have happened because we didn't change anything.
         $this->assertEquals($beforeFlush, $afterFlush);
         // No queries happened because we didn't change anything.
-        $this->assertCount(0, $stack->queries, "Unexpected queries:\n".var_export($stack->queries, true));
+        $this->assertCount(0, $this->getDebugQueries(), "Unexpected queries:\n".var_export($this->getDebugQueries(), true));
 
         $stmt->bindValue(1, $owner1Id);
         $results = $this->executeStatementFetchAll($stmt);
@@ -249,16 +248,15 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         self::assertEquals($secretChild, $child->getSecretChild());
         self::assertEquals($notSecretChild, $child->getNotSecretChild());
 
-        $stack = new DebugStack();
-        $connection->getConfiguration()->setSQLLogger($stack);
-        self::assertCount(0, $stack->queries);
+        $this->resetQueryStack();
+        self::assertCount(0, $this->getDebugQueries());
         $beforeFlush = $this->subscriber->encryptCounter;
         $em->flush();
         $afterFlush = $this->subscriber->encryptCounter;
         // No encryption should have happened because we didn't change anything.
         self::assertEquals($beforeFlush, $afterFlush);
         // No queries happened because we didn't change anything.
-        self::assertCount(0, $stack->queries, "Unexpected queries:\n" . var_export($stack->queries, true));
+        self::assertCount(0, $this->getDebugQueries(), "Unexpected queries:\n" . var_export($this->getDebugQueries(), true));
 
         // flush again
         $beforeFlush = $this->subscriber->encryptCounter;
@@ -267,7 +265,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         // No encryption should have happened because we didn't change anything.
         self::assertEquals($beforeFlush, $afterFlush);
         // No queries happened because we didn't change anything.
-        self::assertCount(0, $stack->queries, "Unexpected queries:\n" . var_export($stack->queries, true));
+        self::assertCount(0, $this->getDebugQueries(), "Unexpected queries:\n" . var_export($this->getDebugQueries(), true));
 
         $stmtBase->bindValue(1, $childId);
         $result = $this->executeStatementFetch($stmtBase);
@@ -352,7 +350,6 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $array = [0, 1];
         $user->setDate($datetime);
         $user->setJson($jsonArray);
-        $user->setArray($array);
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
@@ -366,13 +363,11 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
 
         $entityDate = $user->getDate();
         $entityJson = $user->getJson();
-        $entityArray = $user->getArray();
 
         // Doctrine datetime type is only for date and time. milliseconds and timezone is not stored.
         // We only test the date and time accordingly
         // https://www.doctrine-project.org/projects/doctrine-dbal/en/3.7/reference/types.html#datetime 
         $this->assertEquals($datetime->format('Y-m-d\\TH:i:s'), $entityDate->format('Y-m-d\\TH:i:s'));
         $this->assertEquals($jsonArray, $entityJson);
-        $this->assertEquals($array, $entityArray);
     }
 }

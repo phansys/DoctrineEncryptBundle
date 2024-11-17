@@ -8,12 +8,14 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity()
  */
+#[ORM\Entity]
 class VehicleBicycle extends AbstractVehicle
 {
     /**
      * @ORM\Column(type="boolean")
      * @var bool
      */
+    #[ORM\Column(type:'boolean')]
     private $hasSidewheels = false;
 
     /**
