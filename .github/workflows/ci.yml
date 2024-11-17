@@ -112,7 +112,7 @@ jobs:
           dependency-versions: "${{ matrix.dependency-versions }}"
           composer-options: "--prefer-dist --no-progress"
           working-directory: "demo/symfony6.x"
-        if: ${{ startsWith(matrix.php-version , '8.') }}
+        if: ${{ startsWith(matrix.php-version , '8.1') || startsWith(matrix.php-version , '8.2') }}
 
       - name: Demo symfony6.x - Unit Tests
         run: demo/symfony6.x/vendor/bin/simple-phpunit -c demo/symfony6.x/phpunit.xml.dist
