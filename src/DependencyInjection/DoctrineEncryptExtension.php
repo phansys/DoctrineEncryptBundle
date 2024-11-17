@@ -72,7 +72,12 @@ class DoctrineEncryptExtension extends Extension
                 $loader->load('services_subscriber_with_annotations.yml');
             // PHP 8.x (annotations and attributes)
             } else {
-                $loader->load('services_subscriber_with_annotations_and_attributes.yml');
+                // Doctrine 3.0 - no annotations
+                if (\Composer\InstalledVersions::satisfies(new \Composer\Semver\VersionParser, 'doctrine/orm', '^3.0')) {
+                    $loader->load('service_listeners_with_attributes.yml');
+                } else {
+                    $loader->load('services_subscriber_with_annotations_and_attributes.yml');
+                }
             }
         // Symfony 7 (only attributes)
         } else {

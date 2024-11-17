@@ -116,7 +116,19 @@ jobs:
 
       - name: Demo symfony6.x - Unit Tests
         run: demo/symfony6.x/vendor/bin/simple-phpunit -c demo/symfony6.x/phpunit.xml.dist
-        if: ${{ startsWith(matrix.php-version , '8.') }}
+        if: ${{ startsWith(matrix.php-version , '8.1') || startsWith(matrix.php-version , '8.2') }}
+
+      - name: Demo symfony6.x-orm3 - Install  dependencies
+        uses: "ramsey/composer-install@v2"
+        with:
+          dependency-versions: "${{ matrix.dependency-versions }}"
+          composer-options:    "--prefer-dist --no-progress"
+          working-directory:   "demo/symfony6.x-orm3"
+        if:   ${{ startsWith(matrix.php-version , '8.1') || startsWith(matrix.php-version , '8.2') }}
+
+      - name: Demo symfony6.x-orm3 - Unit Tests
+        run:  demo/symfony6.x/vendor/bin/simple-phpunit -c demo/symfony6.x-orm3/phpunit.xml.dist
+        if:   ${{ startsWith(matrix.php-version , '8.1') || startsWith(matrix.php-version , '8.2') }}
 
       - name: Demo symfony7.x - Install  dependencies
         uses: "ramsey/composer-install@v2"
