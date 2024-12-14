@@ -16,8 +16,8 @@ if (!interface_exists('\Doctrine\Common\Persistence\ManagerRegistry')) {
 if (PHP_VERSION_ID >= 80000) {
     /**
      * @method Secret|null find($id, $lockMode = null, $lockVersion = null)
-     * @method Secret|null findOneBy(array $criteria, array $orderBy = null)
-     * @method Secret[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+     * @method Secret|null findOneBy(array $criteria, ?array $orderBy = null)
+     * @method Secret[]    findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)
      */
     class SecretRepository extends AbstractSecretRepository
     {
