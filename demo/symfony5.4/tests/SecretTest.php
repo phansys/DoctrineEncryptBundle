@@ -16,7 +16,7 @@ class SecretTest extends KernelTestCase
         self::bootKernel([]);
     }
 
-    private function testSecretsAreEncryptedInDatabase(string $className)
+    private function secretsAreEncryptedInDatabase(string $className)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get('doctrine.orm.entity_manager');
@@ -62,7 +62,7 @@ class SecretTest extends KernelTestCase
      */
     public function testAnnotationSecretsAreEncryptedInDatabase(): void
     {
-        $this->testSecretsAreEncryptedInDatabase(Entity\Annotation\Secret::class);
+        $this->secretsAreEncryptedInDatabase(Entity\Annotation\Secret::class);
     }
 
     /**
@@ -73,6 +73,6 @@ class SecretTest extends KernelTestCase
      */
     public function testAttributeSecretsAreEncryptedInDatabase(): void
     {
-        $this->testSecretsAreEncryptedInDatabase(Entity\Attribute\Secret::class);
+        $this->secretsAreEncryptedInDatabase(Entity\Attribute\Secret::class);
     }
 }
