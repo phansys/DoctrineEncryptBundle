@@ -1,47 +1,68 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ambta\DoctrineEncryptBundle\Encryptors;
 
-use ParagonIE\Halite\Symmetric\EncryptionKey;
-use ParagonIE\HiddenString\HiddenString;
+use Ambta\DoctrineEncryptBundle\DependencyInjection\DoctrineEncryptExtension;
+use Ambta\DoctrineEncryptBundle\Exception\UnableToDecryptException;
+use Ambta\DoctrineEncryptBundle\Exception\UnableToEncryptException;
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\Halite\Symmetric\Crypto;
+use ParagonIE\Halite\Symmetric\EncryptionKey;
+use ParagonIE\HiddenString\HiddenString;
 
 /**
- * Class for encrypting and decrypting with the halite library
+ * Class for encrypting and decrypting with the halite library.
  *
  * @author Michael de Groot <specamps@gmail.com>
  */
-
 class HaliteEncryptor implements EncryptorInterface
 {
-    /** @var EncryptionKey|null  */
-    private $encryptionKey = null;
+    /** @var EncryptionKey|null */
+    private $encryptionKey;
     /** @var string */
     private $secret;
 
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(string $secret)
     {
         $this->secret = $secret;
     }
 
     /**
-     * {@inheritdoc}
+     * @throws UnableToEncryptException
+     * @throws \ParagonIE\Halite\Alerts\HaliteAlert
+     * @throws \SodiumException
+     * @throws \Throwable
      */
     public function encrypt(string $data): string
     {
-        return Crypto::encrypt(new HiddenString($data), $this->getKey());
+        try {
+            return Crypto::encrypt(new HiddenString($data), $this->getKey());
+        } catch (\Throwable $e) {
+            if (DoctrineEncryptExtension::$wrapExceptions) {
+                throw new UnableToEncryptException($e->getMessage(), $e->getCode(), $e);
+            }
+            throw $e;
+        }
     }
 
     /**
-     * {@inheritdoc}
+     * @throws UnableToDecryptException
+     * @throws \ParagonIE\Halite\Alerts\HaliteAlert
+     * @throws \SodiumException
+     * @throws \Throwable
      */
     public function decrypt(string $data): string
     {
-         return Crypto::decrypt($data, $this->getKey())->getString();
+        try {
+            return Crypto::decrypt($data, $this->getKey())->getString();
+        } catch (\Throwable $e) {
+            if (DoctrineEncryptExtension::$wrapExceptions) {
+                throw new UnableToDecryptException($e->getMessage(), $e->getCode(), $e);
+            }
+            throw $e;
+        }
     }
 
     private function getKey(): EncryptionKey
@@ -51,10 +72,5 @@ class HaliteEncryptor implements EncryptorInterface
         }
 
         return $this->encryptionKey;
-    }
-
-    public function validateSecret()
-    {
-        $this->getKey();
     }
 }

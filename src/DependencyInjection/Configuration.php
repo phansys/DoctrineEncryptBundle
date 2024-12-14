@@ -6,7 +6,7 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
- * Configuration tree for security bundle. Full tree you can see in Resources/docs
+ * Configuration tree for security bundle. Full tree you can see in Resources/docs.
  *
  * This is the class that validates and merges configuration from your app/config files
  *
@@ -14,10 +14,6 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
-
-    /**
-     * {@inheritDoc}
-     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         // Create tree builder
@@ -48,14 +44,16 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue('%kernel.project_dir%')
                 ->end()
                 ->booleanNode('enable_secret_generation')
-                    ->defaultValue(true)
+                    ->defaultTrue()
                 ->end()
                 ->scalarNode('secret')
                     ->defaultValue(null)
+                ->end()
+                ->scalarNode('wrap_exceptions')
+                    ->defaultFalse()
                 ->end()
             ->end();
 
         return $treeBuilder;
     }
-
 }

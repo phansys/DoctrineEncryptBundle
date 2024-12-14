@@ -8,12 +8,15 @@ use Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor;
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\HiddenString\HiddenString;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\ExpressionLanguage\Expression;
 
 class DoctrineEncryptExtensionTest extends TestCase
 {
+    use ExpectDeprecationTrait;
+
     /**
      * @var DoctrineEncryptExtension
      */
@@ -23,7 +26,7 @@ class DoctrineEncryptExtensionTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->extension = new DoctrineEncryptExtension();
+        $this->extension          = new DoctrineEncryptExtension();
         $this->temporaryDirectory = sys_get_temp_dir().DIRECTORY_SEPARATOR.sha1(mt_rand());
         mkdir($this->temporaryDirectory);
     }
@@ -44,7 +47,7 @@ class DoctrineEncryptExtensionTest extends TestCase
     public function testConfigLoadHalite(): void
     {
         $container = $this->createContainer();
-        $config = [
+        $config    = [
             'encryptor_class' => 'Halite',
         ];
         $this->extension->load([$config], $container);
@@ -67,7 +70,7 @@ class DoctrineEncryptExtensionTest extends TestCase
     public function testConfigLoadCustomEncryptor(): void
     {
         $container = $this->createContainer();
-        $config = [
+        $config    = [
             'encryptor_class' => self::class,
         ];
         $this->extension->load([$config], $container);
@@ -75,11 +78,11 @@ class DoctrineEncryptExtensionTest extends TestCase
         $this->assertSame(self::class, $container->getParameter('ambta_doctrine_encrypt.encryptor_class_name'));
     }
 
-    public function testConfigImpossibleToUseSecretAndSecret_directory_path(): void
+    public function testConfigImpossibleToUseSecretAndSecretDirectoryPath(): void
     {
         $container = $this->createContainer();
-        $config = [
-            'secret' => 'my-secret',
+        $config    = [
+            'secret'                => 'my-secret',
             'secret_directory_path' => 'var',
         ];
 
@@ -91,21 +94,21 @@ class DoctrineEncryptExtensionTest extends TestCase
     public function testConfigUseSecret(): void
     {
         $container = $this->createContainer();
-        $config = [
+        $config    = [
             'secret' => 'my-secret',
         ];
         $this->extension->load([$config], $container);
 
         $this->assertIsString($container->getParameter('ambta_doctrine_encrypt.secret'));
-        $this->assertStringNotContainsString('Halite',$container->getParameter('ambta_doctrine_encrypt.secret'));
-        $this->assertStringNotContainsString('.key',$container->getParameter('ambta_doctrine_encrypt.secret'));
-        $this->assertEquals('my-secret',$container->getParameter('ambta_doctrine_encrypt.secret'));
+        $this->assertStringNotContainsString('Halite', $container->getParameter('ambta_doctrine_encrypt.secret'));
+        $this->assertStringNotContainsString('.key', $container->getParameter('ambta_doctrine_encrypt.secret'));
+        $this->assertEquals('my-secret', $container->getParameter('ambta_doctrine_encrypt.secret'));
     }
 
     public function testHaliteSecretIsCreatedWhenSecretFileDoesNotExistAndSecretCreationIsEnabled(): void
     {
         $container = $this->createContainer();
-        $config = [
+        $config    = [
             'secret_directory_path'    => $this->temporaryDirectory,
             'enable_secret_generation' => true,
         ];
@@ -119,7 +122,7 @@ class DoctrineEncryptExtensionTest extends TestCase
         }
         $this->assertIsString($actualSecret);
         $actualSecretOnDisk = file_get_contents($this->temporaryDirectory.DIRECTORY_SEPARATOR.'.Halite.key');
-        $this->assertEquals($actualSecret,$actualSecretOnDisk);
+        $this->assertEquals($actualSecret, $actualSecretOnDisk);
 
         try {
             KeyFactory::importEncryptionKey(new HiddenString($actualSecret));
@@ -131,7 +134,7 @@ class DoctrineEncryptExtensionTest extends TestCase
     public function testDefuseSecretIsCreatedWhenSecretFileDoesNotExistAndSecretCreationIsEnabled(): void
     {
         $container = $this->createContainer();
-        $config = [
+        $config    = [
             'encryptor_class'          => 'Defuse',
             'secret_directory_path'    => $this->temporaryDirectory,
             'enable_secret_generation' => true,
@@ -146,7 +149,7 @@ class DoctrineEncryptExtensionTest extends TestCase
         }
         $this->assertIsString($actualSecret);
         $actualSecretOnDisk = file_get_contents($this->temporaryDirectory.DIRECTORY_SEPARATOR.'.Defuse.key');
-        $this->assertEquals($actualSecret,$actualSecretOnDisk);
+        $this->assertEquals($actualSecret, $actualSecretOnDisk);
 
         if (strlen(hex2bin($actualSecret)) !== 255) {
             $this->fail('Generated key is not valid');
@@ -156,21 +159,20 @@ class DoctrineEncryptExtensionTest extends TestCase
     public function testSecretIsNotCreatedWhenSecretFileDoesNotExistAndSecretCreationIsNotEnabled(): void
     {
         $container = $this->createContainer();
-        $config = [
+        $config    = [
             'secret_directory_path'    => $this->temporaryDirectory,
             'enable_secret_generation' => false,
         ];
         $this->extension->load([$config], $container);
 
         $this->expectException(\RuntimeException::class);
-        if (method_exists($this,'expectExceptionMessageMatches')) {
+        if (method_exists($this, 'expectExceptionMessageMatches')) {
             $this->expectExceptionMessageMatches('/DoctrineEncryptBundle: Unable to create secret.*/');
-        } elseif(method_exists($this,'expectExceptionMessageRegExp')) {
+        } elseif (method_exists($this, 'expectExceptionMessageRegExp')) {
             $this->expectExceptionMessageRegExp('/DoctrineEncryptBundle: Unable to create secret.*/');
         } else {
             $this->markAsRisky('Unable to see if the exception matches the actual message');
         }
-
 
         $secretArgument = $container->getDefinition('ambta_doctrine_encrypt.encryptor')->getArgument(0);
         if ($secretArgument instanceof Expression) {
@@ -182,10 +184,10 @@ class DoctrineEncryptExtensionTest extends TestCase
     {
         // Create secret
         $expectedSecret = 'my-secret';
-        file_put_contents($this->temporaryDirectory.'/.Halite.key',$expectedSecret);
+        file_put_contents($this->temporaryDirectory.'/.Halite.key', $expectedSecret);
 
         $container = $this->createContainer();
-        $config = [
+        $config    = [
             'secret_directory_path'    => $this->temporaryDirectory,
             'enable_secret_generation' => false,
         ];
@@ -198,7 +200,47 @@ class DoctrineEncryptExtensionTest extends TestCase
             $actualSecret = $secretArgument;
         }
         $this->assertIsString($actualSecret);
-        $this->assertEquals($expectedSecret,$actualSecret);
+        $this->assertEquals($expectedSecret, $actualSecret);
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testWrapExceptionsTriggersDeprecationWarningWhenNotDefiningTheOption(): void
+    {
+        $container = $this->createContainer();
+        $config    = [];
+
+        $this->expectDeprecation('Since doctrineencryptbundle/doctrine-encrypt-bundle 5.4.2: Starting from 6.0, all exceptions thrown by this library will be wrapped by \Ambta\DoctrineEncryptBundle\Exception\DoctrineEncryptBundleException or a child-class of it.
+You can start using these exceptions today by setting \'ambta_doctrine_encrypt.wrap_exceptions\' to TRUE.');
+        $this->extension->load([$config], $container);
+        $this->assertFalse(DoctrineEncryptExtension::$wrapExceptions);
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testWrapExceptionsTriggersDeprecationWarningWhenDisabled(): void
+    {
+        $container = $this->createContainer();
+        $config    = ['wrap_exceptions' => false];
+
+        $this->expectDeprecation('Since doctrineencryptbundle/doctrine-encrypt-bundle 5.4.2: Starting from 6.0, all exceptions thrown by this library will be wrapped by \Ambta\DoctrineEncryptBundle\Exception\DoctrineEncryptBundleException or a child-class of it.
+You can start using these exceptions today by setting \'ambta_doctrine_encrypt.wrap_exceptions\' to TRUE.');
+        $this->extension->load([$config], $container);
+        $this->assertFalse(DoctrineEncryptExtension::$wrapExceptions);
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testWrapExceptionsDoesNotTriggerDeprecationWarningWhenEnabled(): void
+    {
+        $container = $this->createContainer();
+        $config    = ['wrap_exceptions' => true];
+
+        $this->extension->load([$config], $container);
+        $this->assertTrue(DoctrineEncryptExtension::$wrapExceptions);
     }
 
     private function createContainer(): ContainerBuilder
