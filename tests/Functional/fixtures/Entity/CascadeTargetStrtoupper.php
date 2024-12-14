@@ -2,6 +2,7 @@
 
 namespace Ambta\DoctrineEncryptBundle\Tests\Functional\fixtures\Entity;
 
+use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 use Ambta\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -9,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity()
  *
  */
+#[ORM\Entity]
 class CascadeTargetStrtoupper
 {
     /**
@@ -17,17 +19,23 @@ class CascadeTargetStrtoupper
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
      */
+    #[ORM\Id]
+    #[ORM\Column(type:"integer")]
+    #[ORM\GeneratedValue]
     private $id;
 
     /**
      * @Ambta\DoctrineEncryptBundle\Configuration\Encrypted()
      * @ORM\Column(type="string", nullable=true)
      */
+    #[Encrypted]
+    #[ORM\Column(type:"string", nullable: true)]
     private $secret;
 
     /**
      * @ORM\Column(type="string", nullable=true)
      */
+    #[ORM\Column(type:"string", nullable: true)]
     private $notSecret;
 
     /**

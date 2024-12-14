@@ -31,7 +31,7 @@ jobs:
         run:  "php -l src && php -l tests"
 
       - name: "Composer install"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
             composer-options: "--prefer-stable"
             dependency-versions: 'highest'
@@ -51,7 +51,7 @@ jobs:
       fail-fast: false
       matrix:
         # normal, highest, non-dev installs
-        php-version: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2']
+        php-version: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
         composer-options: ['--prefer-stable']
         dependency-versions: ['highest']
         include:
@@ -77,7 +77,7 @@ jobs:
 #          composer global require --no-progress --no-scripts --no-plugins symfony/flex >=1.x
  
       - name: "Composer install"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependency-versions }}"
           composer-options: "--prefer-dist --no-progress"
@@ -88,14 +88,14 @@ jobs:
           SYMFONY_PHPUNIT_VERSION: "${{ matrix.dependency-versions == 'lowest' && '7' || '' }}"
 
       - name: Install symlinks for demo's
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependency-versions }}"
           composer-options: "--prefer-dist --no-progress"
           working-directory: "demo"
 
       - name: Demo symfony5.4 - Install  dependencies
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependency-versions }}"
           composer-options: "--prefer-dist --no-progress"
@@ -107,25 +107,37 @@ jobs:
           SYMFONY_PHPUNIT_VERSION: "${{ matrix.dependency-versions == 'lowest' && '7' || '' }}"
 
       - name: Demo symfony6.x - Install  dependencies
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependency-versions }}"
           composer-options: "--prefer-dist --no-progress"
           working-directory: "demo/symfony6.x"
-        if: ${{ startsWith(matrix.php-version , '8.') }}
+        if: ${{ startsWith(matrix.php-version , '8.1') || startsWith(matrix.php-version , '8.2') || startsWith(matrix.php-version , '8.3') }}
 
       - name: Demo symfony6.x - Unit Tests
         run: demo/symfony6.x/vendor/bin/simple-phpunit -c demo/symfony6.x/phpunit.xml.dist
-        if: ${{ startsWith(matrix.php-version , '8.') }}
+        if: ${{ startsWith(matrix.php-version , '8.1') || startsWith(matrix.php-version , '8.2') || startsWith(matrix.php-version , '8.3') }}
+
+      - name: Demo symfony6.x-orm3 - Install  dependencies
+        uses: "ramsey/composer-install@v3"
+        with:
+          dependency-versions: "${{ matrix.dependency-versions }}"
+          composer-options:    "--prefer-dist --no-progress"
+          working-directory:   "demo/symfony6.x-orm3"
+        if:   ${{ startsWith(matrix.php-version , '8.1') || startsWith(matrix.php-version , '8.2') || startsWith(matrix.php-version , '8.3') }}
+
+      - name: Demo symfony6.x-orm3 - Unit Tests
+        run:  demo/symfony6.x/vendor/bin/simple-phpunit -c demo/symfony6.x-orm3/phpunit.xml.dist
+        if:   ${{ startsWith(matrix.php-version , '8.1') || startsWith(matrix.php-version , '8.2') || startsWith(matrix.php-version , '8.3') }}
 
       - name: Demo symfony7.x - Install  dependencies
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependency-versions }}"
           composer-options: "--prefer-dist --no-progress"
           working-directory: "demo/symfony7.x"
-        if: ${{ startsWith(matrix.php-version , '8.2') }}
+        if: ${{ startsWith(matrix.php-version , '8.2') || startsWith(matrix.php-version , '8.3') }}
 
       - name: Demo symfony7.x - Unit Tests
         run: demo/symfony7.x/vendor/bin/simple-phpunit -c demo/symfony7.x/phpunit.xml.dist
-        if: ${{ startsWith(matrix.php-version , '8.2') }}
+        if: ${{ startsWith(matrix.php-version , '8.2') || startsWith(matrix.php-version , '8.3') }}
