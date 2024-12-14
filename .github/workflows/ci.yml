@@ -23,6 +23,7 @@ jobs:
         with:
           coverage: "none"
           php-version: "8.4"
+          extensions: pdo, pdo_sqlite
 
       - name: "Validate composer.json"
         run: "composer validate --strict --no-check-lock"
@@ -77,6 +78,7 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
+          extensions: pdo, pdo_sqlite
 
 #      - name: Install Global Dependencies
 #        run: |
