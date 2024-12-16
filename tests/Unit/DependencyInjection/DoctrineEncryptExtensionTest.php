@@ -171,7 +171,8 @@ class DoctrineEncryptExtensionTest extends TestCase
         } elseif (method_exists($this, 'expectExceptionMessageRegExp')) {
             $this->expectExceptionMessageRegExp('/DoctrineEncryptBundle: Unable to create secret.*/');
         } else {
-            $this->markAsRisky('Unable to see if the exception matches the actual message');
+            // Unable to see if the exception matches the actual message.
+            $this->markAsRisky();
         }
 
         $secretArgument = $container->getDefinition('ambta_doctrine_encrypt.encryptor')->getArgument(0);
