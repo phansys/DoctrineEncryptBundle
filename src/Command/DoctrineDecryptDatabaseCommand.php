@@ -3,6 +3,7 @@
 namespace Ambta\DoctrineEncryptBundle\Command;
 
 use Ambta\DoctrineEncryptBundle\DependencyInjection\DoctrineEncryptExtension;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -63,7 +64,7 @@ class DoctrineDecryptDatabaseCommand extends AbstractCommand
         // Set counter and loop through entity manager meta data
         $propertyCount = 0;
         foreach ($metaDataArray as $metaData) {
-            if ($metaData instanceof ClassMetadataInfo and $metaData->isMappedSuperclass) {
+            if (($metaData instanceof ClassMetadataInfo || $metaData instanceof ClassMetadata) && $metaData->isMappedSuperclass) {
                 continue;
             }
 
