@@ -32,6 +32,8 @@ class SecretFactory
     /**
      * @param string $className Which class to get a secret for
      *
+     * @phpstan-assert value-of<DoctrineEncryptExtension::SupportedEncryptorClasses> $className
+     *
      * @return string
      */
     public function getSecret(string $className)
@@ -72,6 +74,8 @@ class SecretFactory
      *
      * @param string $secretPath Where to store the secret
      * @param string $className  Which type of secret to generate
+     *
+     * @phpstan-param value-of<DoctrineEncryptExtension::SupportedEncryptorClasses> $className
      *
      * @return string The generated secret
      */
