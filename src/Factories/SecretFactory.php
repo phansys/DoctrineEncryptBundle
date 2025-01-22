@@ -18,10 +18,6 @@ class SecretFactory
      * @var bool
      */
     private $enableSecretCreation;
-    /**
-     * @var Filesystem
-     */
-    private $fs;
 
     public function __construct(string $secretDirectory, bool $enableSecretCreation)
     {
